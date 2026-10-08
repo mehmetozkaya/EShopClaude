@@ -10,12 +10,4 @@
     <ProjectReference Include="..\EShopClaude.ServiceDefaults\EShopClaude.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="EShopClaude.Tests" />
-  </ItemGroup>
-
 </Project>
