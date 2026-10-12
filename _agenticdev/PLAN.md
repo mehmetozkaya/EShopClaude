@@ -36,17 +36,17 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
 
 ## Step 2 — Data persistence design
 **2.1 Infrastructure resources in the AppHost** (`feature/2.1-infra-resources`)
-- Tasks
-  - Add `postgres` with `.WithPgAdmin()`, plus the databases `catalogdb` and `orderingdb` on it. Add `basket-cache` (Redis). Use no data volumes.
-  - Wire the data references with `WaitFor`:
-    - `catalogdb` to `catalog-api`
-    - `orderingdb` to `ordering-api`
-    - `basket-cache` to `basket-api`
-  - Add the AppHost hosting packages (PostgreSQL, Redis).
-- Projects: AppHost
+- Scope: resources and packages only. No DbContext, entities, seed, Redis client code, `AddNpgsqlDbContext`/`AddRedisClient` calls, or `WithReference`/`WaitFor` between the APIs and the new resources (that wiring lands in 2.2–2.4).
+- Sub-steps (one commit each)
+  - **2.1.1 PostgreSQL server and databases.** Add the `Aspire.Hosting.PostgreSQL` package to the AppHost. Add `postgres` with the databases `catalogdb` and `orderingdb` on it. Use no data volume.
+  - **2.1.2 pgAdmin.** Add `.WithPgAdmin()` to `postgres`.
+  - **2.1.3 Redis.** Add the `Aspire.Hosting.Redis` package to the AppHost. Add `basket-cache` (Redis). Use no data volume.
+  - **2.1.4 Client integration packages (packages only).** Add `Aspire.Npgsql.EntityFrameworkCore.PostgreSQL` to Catalog.Api and Ordering.Api, and `Aspire.StackExchange.Redis` to Basket.Api.
+- Projects: AppHost, Catalog.Api, Ordering.Api, Basket.Api (csproj only)
 - Verify
-  - Build passes.
-  - Run shows postgres, pgAdmin and basket-cache healthy, and the APIs start only after their stores.
+  - Build and test pass.
+  - Run shows postgres, catalogdb, orderingdb, pgAdmin and basket-cache healthy, and the APIs and web are still healthy.
+  - The postgres and Redis containers have no data volumes.
   - pgAdmin opens with the server pre-registered, and both databases are listed.
 
 **2.2 Catalog data and seed** (`feature/2.2-catalog-data`)
@@ -54,7 +54,8 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
   - In Catalog.Api, add `Models.cs` with `Product` and `CatalogDbContext.cs`.
   - Register the context with `AddNpgsqlDbContext<CatalogDbContext>("catalogdb")`.
   - At startup, call `EnsureCreated()` and seed about 8 products when the table is empty. Use `decimal` for prices.
-- Projects: Catalog.Api
+  - In the AppHost, give `catalog-api` `WithReference(catalogdb).WaitFor(catalogdb)`.
+- Projects: AppHost, Catalog.Api
 - Verify
   - Build passes.
   - Run: catalog-api is healthy.
@@ -66,7 +67,8 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
   - In Ordering.Api, add `Models.cs` with `Order` and `OrderLine` and `OrderingDbContext.cs`. Configure `Order` to own `Lines` and set the money column precision.
   - Register the context with `AddNpgsqlDbContext<OrderingDbContext>("orderingdb")`.
   - At startup, call `EnsureCreated()`. There is no seed.
-- Projects: Ordering.Api
+  - In the AppHost, give `ordering-api` `WithReference(orderingdb).WaitFor(orderingdb)`.
+- Projects: AppHost, Ordering.Api
 - Verify
   - Build passes.
   - Run: ordering-api is healthy.
@@ -77,7 +79,8 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
   - In Basket.Api, add `Models.cs` with `Basket` and `BasketItem`.
   - Register the client with `AddRedisClient("basket-cache")`.
   - Add `BasketStore.cs` with get, save and delete on the key `basket:{buyerId}`, storing JSON with no TTL.
-- Projects: Basket.Api
+  - In the AppHost, give `basket-api` `WithReference(basket-cache).WaitFor(basket-cache)`.
+- Projects: AppHost, Basket.Api
 - Verify
   - Build passes.
   - Run: basket-api is healthy, and its Redis health check shows on the dashboard.
