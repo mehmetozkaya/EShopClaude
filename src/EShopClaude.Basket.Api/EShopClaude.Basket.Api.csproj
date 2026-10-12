@@ -10,4 +10,8 @@
     <ProjectReference Include="..\EShopClaude.ServiceDefaults\EShopClaude.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="13.6.0" />
+  </ItemGroup>
+
 </Project>
