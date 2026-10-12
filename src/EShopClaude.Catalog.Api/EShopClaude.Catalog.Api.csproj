@@ -10,4 +10,8 @@
     <ProjectReference Include="..\EShopClaude.ServiceDefaults\EShopClaude.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.6.0" />
+  </ItemGroup>
+
 </Project>
