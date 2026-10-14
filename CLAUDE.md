@@ -26,6 +26,12 @@ aspire run        # starts the AppHost (src/aspire.config.json points at it); op
 - Infrastructure resources (Postgres, pgAdmin, Redis) run as containers, so Docker must be running for `aspire run`. The planned E2E test (`Aspire.Hosting.Testing`) needs Docker too.
 - `/health` and `/alive` are mapped only in the Development environment (see `ServiceDefaults/Extensions.cs`).
 
+## Way of working
+
+The spec-driven delivery rules (specs, branches, merges, the per-spec cycle and session hygiene) live in `_agenticdev/WOW.md`:
+
+@_agenticdev/WOW.md
+
 ## Workflow (from PLAN.md)
 
 - One plan step = one branch named `feature/<step-id>-<slug>`, branched off `main` and merged back once the step's checks pass.
