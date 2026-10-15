@@ -1,6 +1,6 @@
 # catalog-api 02 — product seed
 
-**Status:** In progress
+**Status:** Done
 
 ## Goal
 Fill the read-only catalog with demo products, so the storefront and the basket have something to list and add. The catalog has no admin, so the seed is the only source of products.
