@@ -49,109 +49,27 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
   - The postgres and Redis containers have no data volumes.
   - pgAdmin opens with the server pre-registered, and both databases are listed.
 
-**2.2 Catalog data and seed** (`feature/2.2-catalog-data`)
-- Tasks
-  - In Catalog.Api, add `Models.cs` with `Product` and `CatalogDbContext.cs`.
-  - Register the context with `AddNpgsqlDbContext<CatalogDbContext>("catalogdb")`.
-  - At startup, call `EnsureCreated()` and seed about 8 products when the table is empty. Use `decimal` for prices.
-  - In the AppHost, give `catalog-api` `WithReference(catalogdb).WaitFor(catalogdb)`.
-- Projects: AppHost, Catalog.Api
-- Verify
-  - Build passes.
-  - Run: catalog-api is healthy.
-  - pgAdmin: `catalogdb` has the `Products` table with about 8 rows.
-  - Restarting the AppHost re-seeds the products (no volumes).
+## Step 3 — Microservices, one by one
+Each service is built as a backlog of small specs, one feature branch per spec, following `_agenticdev/WOW.md`.
+The spec files are the source of truth for scope and checks, and `_agenticdev/microservices/README.md` tracks their status.
+Spec branches use the WOW.md name (`feature/<service>-<NN>-<short-name>`), not the step-id pattern above.
 
-**2.3 Ordering data model** (`feature/2.3-ordering-data`)
-- Tasks
-  - In Ordering.Api, add `Models.cs` with `Order` and `OrderLine` and `OrderingDbContext.cs`. Configure `Order` to own `Lines` and set the money column precision.
-  - Register the context with `AddNpgsqlDbContext<OrderingDbContext>("orderingdb")`.
-  - At startup, call `EnsureCreated()`. There is no seed.
-  - In the AppHost, give `ordering-api` `WithReference(orderingdb).WaitFor(orderingdb)`.
-- Projects: AppHost, Ordering.Api
-- Verify
-  - Build passes.
-  - Run: ordering-api is healthy.
-  - pgAdmin: `orderingdb` has empty `Orders` and `OrderLines` tables.
+**3.1 Catalog.Api**: specs in `_agenticdev/microservices/catalog-api/`
+- Owns: the read-only, seeded product catalog in `catalogdb` (§4.1).
+- Specs: `01-product-data.md`, `02-product-seed.md`, `03-list-products.md`, `04-get-product.md`
 
-**2.4 Basket Redis store** (`feature/2.4-basket-store`)
-- Tasks
-  - In Basket.Api, add `Models.cs` with `Basket` and `BasketItem`.
-  - Register the client with `AddRedisClient("basket-cache")`.
-  - Add `BasketStore.cs` with get, save and delete on the key `basket:{buyerId}`, storing JSON with no TTL.
-  - In the AppHost, give `basket-api` `WithReference(basket-cache).WaitFor(basket-cache)`.
-- Projects: AppHost, Basket.Api
-- Verify
-  - Build passes.
-  - Run: basket-api is healthy, and its Redis health check shows on the dashboard.
+**3.2 Ordering.Api**: specs in `_agenticdev/microservices/ordering-api/`
+- Owns: orders and their lines in `orderingdb`, including the `Total` it computes on create (§4.3).
+- Specs: `01-order-data.md`, `02-create-order.md`, `03-get-order.md`, `04-list-orders.md`
 
-## Step 3 — Microservices, one by one (endpoints over their own data)
-**3.1 Catalog.Api endpoints** (`feature/3.1-catalog-api`)
-- Tasks
-  - Add `GET /products`, ordered by Id.
-  - Add `GET /products/{id}`, which returns `404` when the product is missing (§4.1).
-  - Add `Catalog.Api.http`.
-- Projects: Catalog.Api
-- Verify
-  - Build passes.
-  - HTTP: the list returns the seed. A valid id returns `200`. An unknown id returns `404`.
-  - Trace: the request spans include the EF/Npgsql child spans.
-
-**3.2 Ordering.Api endpoints** (`feature/3.2-ordering-api`)
-- Tasks
-  - Add `POST /orders`. It sets `CreatedAt` (UTC) and computes `Total = Σ UnitPrice × Quantity`, then returns `201 { id }`.
-  - Add `GET /orders?buyerId=`. It returns `OrderSummary` newest first, with `itemCount`.
-  - Add `GET /orders/{id}`. It returns the order with its lines, or `404`.
-  - Add `Ordering.Api.http`.
-- Projects: Ordering.Api
-- Verify
-  - Build passes.
-  - HTTP: POST a sample order and check that the `201` id and the Total are correct.
-  - HTTP: the list shows the order first, and the detail returns its lines.
-  - HTTP: an unknown id returns `404`.
-  - pgAdmin: the rows appear in `orderingdb`.
-
-**3.3 Basket.Api local endpoints** (`feature/3.3-basket-api`)
-- Tasks
-  - Add `GET /baskets/{buyerId}`, which returns an empty basket when none exists.
-  - Add `DELETE /baskets/{buyerId}/items/{productId}`.
-  - Add `Basket.Api.http`. POST items and checkout wait until step 4, because they need other services.
-- Projects: Basket.Api
-- Verify
-  - Build passes.
-  - HTTP: GET for a new buyer returns `{ buyerId, items: [] }`.
-  - HTTP: DELETE on a missing line returns `200` with the basket unchanged.
+**3.3 Basket.Api**: specs in `_agenticdev/microservices/basket-api/`
+- Owns: baskets in Redis (`basket:{buyerId}`), the name and price snapshot taken from Catalog at add time, and checkout orchestration (§4.2, §4.4).
+- Specs: `01-get-basket.md`, `02-add-item.md`, `03-remove-item.md`, `04-checkout.md`
+- `02-add-item` needs `catalog-api/04` merged, and `04-checkout` needs `ordering-api/02` merged.
 
 ## Step 4 — Service communication
-**4.1 Basket → Catalog: add to basket** (`feature/4.1-basket-add-item`)
-- Tasks
-  - Add a typed `CatalogClient` with the base address `https+http://catalog-api`.
-  - Add `POST /baskets/{buyerId}/items` with the body `{ productId, quantity }`. It works like this:
-    - It looks up the product, and returns `404` when Catalog does.
-    - If the product's line already exists, it increments the quantity. Otherwise it adds a line with a snapshot of the name and price.
-    - It saves the basket and returns it.
-- Projects: Basket.Api
-- Verify
-  - HTTP: adding product A twice gives qty 2. Adding product B gives a new line. An unknown id returns `404`.
-  - HTTP: DELETE removes a line.
-  - Trace: one trace runs basket-api → catalog-api → postgres, plus a Redis span.
-
-**4.2 Basket → Ordering: checkout flow** (`feature/4.2-checkout`)
-- Tasks
-  - Add a typed `OrderingClient` with the base address `https+http://ordering-api`.
-  - Add `POST /baskets/{buyerId}/checkout`, which follows §4.4:
-    1. Read the basket. If it is missing or empty, return `400`.
-    2. POST `/orders` with the lines mapped 1:1 from the basket.
-    3. Delete the basket.
-    4. Return `200 { orderId }`.
-  - If the order call fails, keep the basket. There is no compensation.
-- Projects: Basket.Api
-- Verify
-  - HTTP: checkout of an empty basket returns `400`.
-  - HTTP: checkout of a filled basket returns an `orderId`. `GET ordering-api /orders/{id}` then matches the lines and Total, and the basket is empty afterwards.
-  - Trace: basket-api → ordering-api → postgres, plus the Redis delete.
-  - pgAdmin: the new order rows are in `orderingdb`.
-  - Failure check: stop ordering-api from the dashboard and run checkout. The call fails, and the basket is still there.
+This step is now part of 3.3: `basket-api/02-add-item` (Basket → Catalog) and `basket-api/04-checkout` (Basket → Ordering).
+The step number is kept so that the ids of Steps 5 and 6 don't change.
 
 ## Step 5 — Storefront pages
 **5.1 Web clients, buyer constant and nav** (`feature/5.1-web-clients`)
@@ -225,14 +143,10 @@ Source of truth: `_agenticdev/PROJECT.md` (section numbers below refer to it). T
 |---|---|---|---|
 | 1.1 | skeleton | AppHost + 3 new APIs | run, `/health` |
 | 2.1 | infra-resources | AppHost | run, pgAdmin |
-| 2.2 | catalog-data | Catalog.Api | pgAdmin seed |
-| 2.3 | ordering-data | Ordering.Api | pgAdmin tables |
-| 2.4 | basket-store | Basket.Api | run, health |
-| 3.1 | catalog-api | Catalog.Api | HTTP, trace |
-| 3.2 | ordering-api | Ordering.Api | HTTP, pgAdmin |
-| 3.3 | basket-api | Basket.Api | HTTP |
-| 4.1 | basket-add-item | Basket.Api | HTTP, trace |
-| 4.2 | checkout | Basket.Api | HTTP, trace, pgAdmin |
+| 3.1 | `catalog-NN-*` (4 specs) | Catalog.Api | per spec |
+| 3.2 | `ordering-NN-*` (4 specs) | Ordering.Api | per spec |
+| 3.3 | `basket-NN-*` (4 specs) | Basket.Api | per spec |
+| 4 | in 3.3 | — | — |
 | 5.1 | web-clients | Web | build, browser |
 | 5.2 | products-page | Web | browser, trace |
 | 5.3 | cart-page | Web | browser |

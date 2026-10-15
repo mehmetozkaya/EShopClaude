@@ -19,10 +19,11 @@ How the team and Claude Code deliver changes on this repository.
 
 ## Folder layout
 - Specs live in `_agenticdev/microservices/<service>/NN-<short-name>.md`.
-- Specs are numbered per service (`01`, `02`, ...) and are never renumbered.
+- Specs are numbered per service (`01`, `02`, ...) in build order. Once a spec is merged, its number never changes.
 - Every spec follows `_agenticdev/templates/spec-template.md`.
 - To start a new spec, copy [the spec template](templates/spec-template.md) and fill in every section.
-- `_agenticdev/microservices/README.md` holds the status table for all specs.
+- A spec's Definition of Done lists checks you can run: the exact command or request, and the expected result. "It works" is not a Definition of Done.
+- `_agenticdev/microservices/README.md` holds the status table for all specs. Update it in the same change as any spec that is added, split or renamed.
 
 ```
 _agenticdev/
