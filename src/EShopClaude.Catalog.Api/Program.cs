@@ -11,11 +11,12 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// Create the schema at startup (no migrations; data resets with the AppHost).
+// Create the schema and seed the products at startup (no migrations; data resets with the AppHost).
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await db.Database.EnsureCreatedAsync();
+    await CatalogDbContext.SeedAsync(db);
 }
 
 // Configure the HTTP request pipeline.
