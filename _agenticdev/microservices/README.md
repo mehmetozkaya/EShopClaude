@@ -5,7 +5,7 @@ A spec is ready to start when every spec in its "Depends on" column is Done.
 
 | Service | Spec | Branch | Depends on | Status |
 |---|---|---|---|---|
-| catalog-api | [01-product-data](catalog-api/01-product-data.md) | `feature/catalog-01-product-data` | nothing | Not started |
+| catalog-api | [01-product-data](catalog-api/01-product-data.md) | `feature/catalog-01-product-data` | nothing | Done |
 | catalog-api | [02-product-seed](catalog-api/02-product-seed.md) | `feature/catalog-02-product-seed` | catalog-api/01 | Not started |
 | catalog-api | [03-list-products](catalog-api/03-list-products.md) | `feature/catalog-03-list-products` | catalog-api/02 | Not started |
 | catalog-api | [04-get-product](catalog-api/04-get-product.md) | `feature/catalog-04-get-product` | catalog-api/02 | Not started |
