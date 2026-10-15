@@ -1,6 +1,6 @@
 # catalog-api 01 — product data
 
-**Status:** Not started
+**Status:** Done
 
 ## Goal
 Give Catalog.Api its own persistence: the `Product` entity stored in `catalogdb`, with the schema created at startup. Every later catalog spec reads from this table.
