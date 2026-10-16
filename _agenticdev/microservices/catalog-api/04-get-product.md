@@ -1,6 +1,6 @@
 # catalog-api 04 — get product
 
-**Status:** In progress
+**Status:** Done
 
 ## Goal
 Expose a single product by id. Basket.Api calls this endpoint when an item is added, to check the product exists and to snapshot its name and price.
