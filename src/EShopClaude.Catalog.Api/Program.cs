@@ -1,4 +1,5 @@
 using EShopClaude.Catalog.Api;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,9 @@ using (var scope = app.Services.CreateScope())
 app.UseExceptionHandler();
 
 app.MapGet("/", () => "Catalog API is running.");
+
+app.MapGet("/products", async (CatalogDbContext db) =>
+    await db.Products.AsNoTracking().OrderBy(p => p.Id).ToListAsync());
 
 app.MapDefaultEndpoints();
 

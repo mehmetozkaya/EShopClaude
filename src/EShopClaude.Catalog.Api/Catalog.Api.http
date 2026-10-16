@@ -1,0 +1,5 @@
+@Catalog.Api_HostAddress = http://localhost:5101
+
+### List products (ordered by Id)
+GET {{Catalog.Api_HostAddress}}/products
+Accept: application/json
