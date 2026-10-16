@@ -28,6 +28,11 @@ app.MapGet("/", () => "Catalog API is running.");
 app.MapGet("/products", async (CatalogDbContext db) =>
     await db.Products.AsNoTracking().OrderBy(p => p.Id).ToListAsync());
 
+app.MapGet("/products/{id:int}", async (int id, CatalogDbContext db) =>
+    await db.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id) is { } product
+        ? Results.Ok(product)
+        : Results.NotFound());
+
 app.MapDefaultEndpoints();
 
 app.Run();

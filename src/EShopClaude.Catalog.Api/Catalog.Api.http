@@ -3,3 +3,11 @@
 ### List products (ordered by Id)
 GET {{Catalog.Api_HostAddress}}/products
 Accept: application/json
+
+### Get product by id
+GET {{Catalog.Api_HostAddress}}/products/1
+Accept: application/json
+
+### Get unknown product (404)
+GET {{Catalog.Api_HostAddress}}/products/9999
+Accept: application/json
