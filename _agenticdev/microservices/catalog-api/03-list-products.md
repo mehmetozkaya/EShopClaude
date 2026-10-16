@@ -1,6 +1,6 @@
 # catalog-api 03 — list products
 
-**Status:** In progress
+**Status:** Done
 
 ## Goal
 Expose the catalog to callers with `GET /products`. The storefront's Products page (use case 1) lists products through this endpoint.
