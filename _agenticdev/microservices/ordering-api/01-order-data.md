@@ -1,6 +1,6 @@
 # ordering-api 01 — order data
 
-**Status:** Not started
+**Status:** Done (fe0577e)
 
 ## Goal
 Give Ordering.Api its own persistence: orders and their lines in `orderingdb`, with the schema created at startup. Lines copy the product name and price, so an order never depends on Catalog. Every later ordering spec (create, get, list) reads from or writes to these tables.
