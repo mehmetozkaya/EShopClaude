@@ -1,0 +1,13 @@
+@Ordering.Api_HostAddress = http://localhost:5103
+
+### Create order (Total = 24.99 x 2 + 89.00 x 1 = 138.98)
+POST {{Ordering.Api_HostAddress}}/orders
+Content-Type: application/json
+
+{
+  "buyerId": "demo-user",
+  "lines": [
+    { "productId": 1, "productName": "Wireless Mouse", "unitPrice": 24.99, "quantity": 2 },
+    { "productId": 2, "productName": "Mechanical Keyboard", "unitPrice": 89.00, "quantity": 1 }
+  ]
+}

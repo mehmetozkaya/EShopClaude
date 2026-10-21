@@ -24,6 +24,28 @@ app.UseExceptionHandler();
 
 app.MapGet("/", () => "Ordering API is running.");
 
+app.MapPost("/orders", async (CreateOrderRequest request, OrderingDbContext db) =>
+{
+    var order = new Order
+    {
+        BuyerId = request.BuyerId,
+        CreatedAt = DateTime.UtcNow,
+        Lines = request.Lines.Select(l => new OrderLine
+        {
+            ProductId = l.ProductId,
+            ProductName = l.ProductName,
+            UnitPrice = l.UnitPrice,
+            Quantity = l.Quantity
+        }).ToList()
+    };
+    order.Total = order.Lines.Sum(l => l.UnitPrice * l.Quantity);
+
+    db.Orders.Add(order);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/orders/{order.Id}", new CreateOrderResponse(order.Id));
+});
+
 app.MapDefaultEndpoints();
 
 app.Run();
