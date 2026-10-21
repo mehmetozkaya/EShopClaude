@@ -1,0 +1,20 @@
+namespace EShopClaude.Ordering.Api;
+
+public class Order
+{
+    public int Id { get; set; }
+    public string BuyerId { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public decimal Total { get; set; }
+    public List<OrderLine> Lines { get; set; } = [];
+}
+
+public class OrderLine
+{
+    public int Id { get; set; }
+    public int OrderId { get; set; }
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public decimal UnitPrice { get; set; }
+    public int Quantity { get; set; }
+}
