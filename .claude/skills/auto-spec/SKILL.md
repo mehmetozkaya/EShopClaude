@@ -11,7 +11,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash(git:*), Bash(dotnet build:*)
 Arguments: `$ARGUMENTS`, parsed as `<service> <NN> [slug] ["title"]`. `slug` and `title` go only to /new-spec, which needs them for a spec that doesn't exist yet.
 
 The three skills are manual-only, so run each one by reading its `SKILL.md` and following it exactly, with `$ARGUMENTS` set as below. Its file is the only source of truth: don't add, skip or reorder steps.
-A skill's first lines may hold `` !`git …` `` commands. These aren't run automatically when you read the file, so run them yourself first and use their output as the state.
+The start-spec and finish-spec skills begin with injected git context lines (Current branch, Commits so far, Working tree). Those don't run when you read the file, so run the same git commands yourself first and use their output as the state.
 
 ## Steps
 
