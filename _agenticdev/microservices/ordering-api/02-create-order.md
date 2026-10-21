@@ -1,6 +1,6 @@
 # ordering-api 02 — create order
 
-**Status:** Not started
+**Status:** Done (f1547b5)
 
 ## Goal
 Let callers place an order with `POST /orders`. Basket.Api calls this at checkout (basket-api/04, PROJECT.md §4.4) with the buyer id and the lines it has snapshotted. Ordering owns the order total, so it computes `Total = Σ UnitPrice × Quantity` and stores it, and it sets `CreatedAt` itself. The lines are stored as sent, with no Catalog call and no re-pricing.
