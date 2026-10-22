@@ -11,3 +11,13 @@ Content-Type: application/json
     { "productId": 2, "productName": "Mechanical Keyboard", "unitPrice": 89.00, "quantity": 1 }
   ]
 }
+
+###
+
+### Get order (run the POST above first)
+GET {{Ordering.Api_HostAddress}}/orders/1
+
+###
+
+### Get unknown order (expect 404)
+GET {{Ordering.Api_HostAddress}}/orders/9999

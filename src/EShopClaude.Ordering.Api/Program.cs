@@ -46,6 +46,13 @@ app.MapPost("/orders", async (CreateOrderRequest request, OrderingDbContext db) 
     return Results.Created($"/orders/{order.Id}", new CreateOrderResponse(order.Id));
 });
 
+app.MapGet("/orders/{id:int}", async (int id, OrderingDbContext db) =>
+    await db.Orders.AsNoTracking()
+        .Include(o => o.Lines.OrderBy(l => l.Id))
+        .FirstOrDefaultAsync(o => o.Id == id) is { } order
+        ? Results.Ok(order)
+        : Results.NotFound());
+
 app.MapDefaultEndpoints();
 
 app.Run();
