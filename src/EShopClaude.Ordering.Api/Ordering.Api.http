@@ -21,3 +21,26 @@ GET {{Ordering.Api_HostAddress}}/orders/1
 
 ### Get unknown order (expect 404)
 GET {{Ordering.Api_HostAddress}}/orders/9999
+
+###
+
+### Create order for another buyer (Total = 39.50 x 1 = 39.50)
+POST {{Ordering.Api_HostAddress}}/orders
+Content-Type: application/json
+
+{
+  "buyerId": "other-buyer",
+  "lines": [
+    { "productId": 3, "productName": "USB-C Hub", "unitPrice": 39.50, "quantity": 1 }
+  ]
+}
+
+###
+
+### List orders for demo-user (newest first)
+GET {{Ordering.Api_HostAddress}}/orders?buyerId=demo-user
+
+###
+
+### List orders for a buyer with no orders (expect [])
+GET {{Ordering.Api_HostAddress}}/orders?buyerId=nobody
