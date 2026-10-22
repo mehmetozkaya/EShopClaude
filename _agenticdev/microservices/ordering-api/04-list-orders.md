@@ -1,6 +1,6 @@
 # ordering-api 04 — list orders
 
-**Status:** Not started
+**Status:** Done (e2ac9bf)
 
 ## Goal
 Return one buyer's orders as summaries via `GET /orders?buyerId=`, newest first. The storefront's "My orders" page `/orders` (use case 4, PROJECT.md §5) reads this endpoint to show a table of id, date, item count and total for `demo-user`, where each row links to the order detail page that ordering-api/03 serves.

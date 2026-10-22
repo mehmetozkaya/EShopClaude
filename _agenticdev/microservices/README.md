@@ -12,7 +12,7 @@ A spec is ready to start when every spec in its "Depends on" column is Done.
 | ordering-api | [01-order-data](ordering-api/01-order-data.md) | `feature/ordering-01-order-data` | nothing | Done |
 | ordering-api | [02-create-order](ordering-api/02-create-order.md) | `feature/ordering-02-create-order` | ordering-api/01 | Done |
 | ordering-api | [03-get-order](ordering-api/03-get-order.md) | `feature/ordering-03-get-order` | ordering-api/02 | Done |
-| ordering-api | [04-list-orders](ordering-api/04-list-orders.md) | `feature/ordering-04-list-orders` | ordering-api/02 | Not started |
+| ordering-api | [04-list-orders](ordering-api/04-list-orders.md) | `feature/ordering-04-list-orders` | ordering-api/02 | Done |
 | basket-api | [01-get-basket](basket-api/01-get-basket.md) | `feature/basket-01-get-basket` | nothing | Not started |
 | basket-api | [02-add-item](basket-api/02-add-item.md) | `feature/basket-02-add-item` | basket-api/01, catalog-api/04 | Not started |
 | basket-api | [03-remove-item](basket-api/03-remove-item.md) | `feature/basket-03-remove-item` | basket-api/02 | Not started |
