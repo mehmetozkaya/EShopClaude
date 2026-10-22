@@ -53,6 +53,14 @@ app.MapGet("/orders/{id:int}", async (int id, OrderingDbContext db) =>
         ? Results.Ok(order)
         : Results.NotFound());
 
+app.MapGet("/orders", async (string buyerId, OrderingDbContext db) =>
+    await db.Orders.AsNoTracking()
+        .Where(o => o.BuyerId == buyerId)
+        .OrderByDescending(o => o.CreatedAt)
+        .ThenByDescending(o => o.Id)
+        .Select(o => new OrderSummary(o.Id, o.CreatedAt, o.Total, o.Lines.Sum(l => l.Quantity)))
+        .ToListAsync());
+
 app.MapDefaultEndpoints();
 
 app.Run();

@@ -24,3 +24,5 @@ public record CreateOrderRequest(string BuyerId, List<CreateOrderLine> Lines);
 public record CreateOrderLine(int ProductId, string ProductName, decimal UnitPrice, int Quantity);
 
 public record CreateOrderResponse(int Id);
+
+public record OrderSummary(int Id, DateTime CreatedAt, decimal Total, int ItemCount);
