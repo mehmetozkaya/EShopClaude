@@ -1,6 +1,6 @@
 # ordering-api 03 — get order
 
-**Status:** Not started
+**Status:** Done (51f448c)
 
 ## Goal
 Return one order with its lines via `GET /orders/{id}`. The storefront's order detail page `/orders/{id:int}` reads this endpoint, and that page also serves as the checkout confirmation (use case 4, PROJECT.md §4.4 step 7). The E2E test (PROJECT.md §6) reads it too, to check the lines and the `Total`.
