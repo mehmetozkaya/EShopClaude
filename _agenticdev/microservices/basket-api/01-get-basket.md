@@ -1,6 +1,6 @@
 # basket-api 01 — get basket
 
-**Status:** Not started
+**Status:** Done (6ac9127)
 
 ## Goal
 Give Basket.Api its Redis store and its first endpoint, `GET /baskets/{buyerId}`. The storefront's cart page (`/cart`) reads the basket through it, and the E2E test (PROJECT.md §6 step 5) reads it to check that the basket is empty after checkout. The later basket specs (add, remove, checkout) build on `BasketStore`.
