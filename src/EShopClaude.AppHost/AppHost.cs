@@ -19,6 +19,8 @@ builder.AddProject<Projects.EShopClaude_Ordering_Api>("ordering-api")
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.EShopClaude_Basket_Api>("basket-api")
+    .WithReference(basketCache)
+    .WaitFor(basketCache)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.EShopClaude_Web>("webfrontend")

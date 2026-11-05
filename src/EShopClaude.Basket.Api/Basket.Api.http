@@ -1,0 +1,11 @@
+@Basket.Api_HostAddress = http://localhost:5102
+
+### Get basket for demo-user
+GET {{Basket.Api_HostAddress}}/baskets/demo-user
+
+###
+
+### Get basket for a buyer with no basket (expect empty items)
+GET {{Basket.Api_HostAddress}}/baskets/new-buyer
+
+###
