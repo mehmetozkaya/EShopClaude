@@ -41,3 +41,13 @@ Content-Type: application/json
 { "productId": 999, "quantity": 1 }
 
 ###
+
+### Remove product 2 from demo-user (expect only product 1 left)
+DELETE {{Basket.Api_HostAddress}}/baskets/demo-user/items/2
+
+###
+
+### Remove a product that isn't in the basket (expect 200, basket unchanged)
+DELETE {{Basket.Api_HostAddress}}/baskets/demo-user/items/999
+
+###
