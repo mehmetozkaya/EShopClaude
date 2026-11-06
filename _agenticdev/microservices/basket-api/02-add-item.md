@@ -1,6 +1,6 @@
 # basket-api 02 — add item
 
-**Status:** Not started
+**Status:** Done (946a7ee)
 
 ## Goal
 Let a buyer add a product to the basket (use case 2). Basket.Api looks the product up in Catalog (`GET /products/{id}`) and copies its name and price into the basket line as a snapshot. From then on that basket price is final, because checkout does not re-price (PROJECT.md §4.2, §4.4). The storefront's **Add to cart** button (PLAN.md 5.2) and the E2E test (PROJECT.md §6 step 2) both call this endpoint.

@@ -14,6 +14,6 @@ A spec is ready to start when every spec in its "Depends on" column is Done.
 | ordering-api | [03-get-order](ordering-api/03-get-order.md) | `feature/ordering-03-get-order` | ordering-api/02 | Done |
 | ordering-api | [04-list-orders](ordering-api/04-list-orders.md) | `feature/ordering-04-list-orders` | ordering-api/02 | Done |
 | basket-api | [01-get-basket](basket-api/01-get-basket.md) | `feature/basket-01-get-basket` | nothing | Done |
-| basket-api | [02-add-item](basket-api/02-add-item.md) | `feature/basket-02-add-item` | basket-api/01, catalog-api/04 | Not started |
+| basket-api | [02-add-item](basket-api/02-add-item.md) | `feature/basket-02-add-item` | basket-api/01, catalog-api/04 | Done |
 | basket-api | [03-remove-item](basket-api/03-remove-item.md) | `feature/basket-03-remove-item` | basket-api/02 | Not started |
 | basket-api | [04-checkout](basket-api/04-checkout.md) | `feature/basket-04-checkout` | basket-api/02, ordering-api/02 | Not started |
