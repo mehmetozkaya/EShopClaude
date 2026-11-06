@@ -9,6 +9,7 @@ builder.AddRedisClient("basket-cache");
 // Add services to the container.
 builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<BasketStore>();
+builder.Services.AddHttpClient<CatalogClient>(c => c.BaseAddress = new("https+http://catalog-api"));
 
 var app = builder.Build();
 
@@ -19,6 +20,32 @@ app.MapGet("/", () => "Basket API is running.");
 
 app.MapGet("/baskets/{buyerId}", async (string buyerId, BasketStore store) =>
     Results.Ok(await store.GetAsync(buyerId) ?? new Basket { BuyerId = buyerId }));
+
+app.MapPost("/baskets/{buyerId}/items", async (string buyerId, AddItemRequest request, CatalogClient catalog, BasketStore store) =>
+{
+    var product = await catalog.GetProductAsync(request.ProductId);
+    if (product is null) return Results.NotFound();
+
+    var basket = await store.GetAsync(buyerId) ?? new Basket { BuyerId = buyerId };
+    var line = basket.Items.FirstOrDefault(i => i.ProductId == request.ProductId);
+    if (line is not null)
+    {
+        line.Quantity += request.Quantity;
+    }
+    else
+    {
+        basket.Items.Add(new BasketItem
+        {
+            ProductId = product.Id,
+            ProductName = product.Name,
+            UnitPrice = product.Price,
+            Quantity = request.Quantity
+        });
+    }
+
+    await store.SaveAsync(basket);
+    return Results.Ok(basket);
+});
 
 app.MapDefaultEndpoints();
 

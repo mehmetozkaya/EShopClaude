@@ -9,3 +9,35 @@ GET {{Basket.Api_HostAddress}}/baskets/demo-user
 GET {{Basket.Api_HostAddress}}/baskets/new-buyer
 
 ###
+
+### Add product 1 to demo-user (first add: new line, quantity 1)
+POST {{Basket.Api_HostAddress}}/baskets/demo-user/items
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 1 }
+
+###
+
+### Add product 1 again (increments the existing line to quantity 2)
+POST {{Basket.Api_HostAddress}}/baskets/demo-user/items
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 1 }
+
+###
+
+### Add product 2 (second line with Catalog's name and price)
+POST {{Basket.Api_HostAddress}}/baskets/demo-user/items
+Content-Type: application/json
+
+{ "productId": 2, "quantity": 1 }
+
+###
+
+### Add an unknown product (expect 404, basket unchanged)
+POST {{Basket.Api_HostAddress}}/baskets/demo-user/items
+Content-Type: application/json
+
+{ "productId": 999, "quantity": 1 }
+
+###

@@ -14,4 +14,7 @@ public class BasketStore(IConnectionMultiplexer redis)
         var value = await redis.GetDatabase().StringGetAsync(Key(buyerId));
         return value.IsNullOrEmpty ? null : JsonSerializer.Deserialize<Basket>(value.ToString(), JsonOptions);
     }
+
+    public Task SaveAsync(Basket basket) =>
+        redis.GetDatabase().StringSetAsync(Key(basket.BuyerId), JsonSerializer.Serialize(basket, JsonOptions));
 }
