@@ -47,6 +47,17 @@ app.MapPost("/baskets/{buyerId}/items", async (string buyerId, AddItemRequest re
     return Results.Ok(basket);
 });
 
+app.MapDelete("/baskets/{buyerId}/items/{productId:int}", async (string buyerId, int productId, BasketStore store) =>
+{
+    var basket = await store.GetAsync(buyerId);
+    if (basket is null) return Results.Ok(new Basket { BuyerId = buyerId });
+
+    if (basket.Items.RemoveAll(i => i.ProductId == productId) == 0) return Results.Ok(basket);
+
+    await store.SaveAsync(basket);
+    return Results.Ok(basket);
+});
+
 app.MapDefaultEndpoints();
 
 app.Run();
