@@ -15,3 +15,5 @@ public class BasketItem
 }
 
 public record AddItemRequest(int ProductId, int Quantity);
+
+public record CheckoutResponse(int OrderId);
