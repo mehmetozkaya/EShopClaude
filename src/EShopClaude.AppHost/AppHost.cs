@@ -13,7 +13,7 @@ var catalogApi = builder.AddProject<Projects.EShopClaude_Catalog_Api>("catalog-a
     .WaitFor(catalogDb)
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.EShopClaude_Ordering_Api>("ordering-api")
+var orderingApi = builder.AddProject<Projects.EShopClaude_Ordering_Api>("ordering-api")
     .WithReference(orderingDb)
     .WaitFor(orderingDb)
     .WithHttpHealthCheck("/health");
@@ -23,6 +23,8 @@ builder.AddProject<Projects.EShopClaude_Basket_Api>("basket-api")
     .WaitFor(basketCache)
     .WithReference(catalogApi)
     .WaitFor(catalogApi)
+    .WithReference(orderingApi)
+    .WaitFor(orderingApi)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.EShopClaude_Web>("webfrontend")

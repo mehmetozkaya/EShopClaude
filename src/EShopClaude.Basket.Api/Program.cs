@@ -10,6 +10,7 @@ builder.AddRedisClient("basket-cache");
 builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<BasketStore>();
 builder.Services.AddHttpClient<CatalogClient>(c => c.BaseAddress = new("https+http://catalog-api"));
+builder.Services.AddHttpClient<OrderingClient>(c => c.BaseAddress = new("https+http://ordering-api"));
 
 var app = builder.Build();
 
@@ -56,6 +57,16 @@ app.MapDelete("/baskets/{buyerId}/items/{productId:int}", async (string buyerId,
 
     await store.SaveAsync(basket);
     return Results.Ok(basket);
+});
+
+app.MapPost("/baskets/{buyerId}/checkout", async (string buyerId, BasketStore store, OrderingClient ordering) =>
+{
+    var basket = await store.GetAsync(buyerId);
+    if (basket is null || basket.Items.Count == 0) return Results.BadRequest();
+
+    var orderId = await ordering.CreateOrderAsync(basket);
+    await store.DeleteAsync(buyerId);
+    return Results.Ok(new CheckoutResponse(orderId));
 });
 
 app.MapDefaultEndpoints();

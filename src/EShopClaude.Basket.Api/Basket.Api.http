@@ -51,3 +51,13 @@ DELETE {{Basket.Api_HostAddress}}/baskets/demo-user/items/2
 DELETE {{Basket.Api_HostAddress}}/baskets/demo-user/items/999
 
 ###
+
+### Check out demo-user (expect 200 { orderId }, basket deleted)
+POST {{Basket.Api_HostAddress}}/baskets/demo-user/checkout
+
+###
+
+### Check out a buyer with no basket (expect 400)
+POST {{Basket.Api_HostAddress}}/baskets/new-buyer/checkout
+
+###
