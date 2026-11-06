@@ -1,6 +1,6 @@
 # basket-api 03 — remove item
 
-**Status:** Not started
+**Status:** Done (49e7cab)
 
 ## Goal
 Let a buyer remove a line from the basket (use case 2, "and remove a line"). The storefront's **Remove** button on `/cart` (PLAN.md 5.3) calls this endpoint. Remove deletes the whole line. There is no quantity editor or decrement (PROJECT.md "Out of scope").
