@@ -8,7 +8,7 @@ var orderingDb = postgres.AddDatabase("orderingdb");
 
 var basketCache = builder.AddRedis("basket-cache");
 
-builder.AddProject<Projects.EShopClaude_Catalog_Api>("catalog-api")
+var catalogApi = builder.AddProject<Projects.EShopClaude_Catalog_Api>("catalog-api")
     .WithReference(catalogDb)
     .WaitFor(catalogDb)
     .WithHttpHealthCheck("/health");
@@ -21,6 +21,8 @@ builder.AddProject<Projects.EShopClaude_Ordering_Api>("ordering-api")
 builder.AddProject<Projects.EShopClaude_Basket_Api>("basket-api")
     .WithReference(basketCache)
     .WaitFor(basketCache)
+    .WithReference(catalogApi)
+    .WaitFor(catalogApi)
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Projects.EShopClaude_Web>("webfrontend")

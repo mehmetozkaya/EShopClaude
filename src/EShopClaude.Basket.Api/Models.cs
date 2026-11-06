@@ -13,3 +13,5 @@ public class BasketItem
     public decimal UnitPrice { get; set; }
     public int Quantity { get; set; }
 }
+
+public record AddItemRequest(int ProductId, int Quantity);
