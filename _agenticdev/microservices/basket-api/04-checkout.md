@@ -1,6 +1,6 @@
 # basket-api 04 — checkout
 
-**Status:** Not started
+**Status:** Done (bb26c02)
 
 ## Goal
 Turn the basket into an order (use case 3). Basket.Api orchestrates checkout as PROJECT.md §4.4 describes. It reads the basket, sends its snapshot lines to Ordering.Api, deletes the basket and returns the new order id. The storefront's **Place order** button on `/cart` (PLAN.md 5.3) calls this endpoint and then navigates to `/orders/{orderId}`.
