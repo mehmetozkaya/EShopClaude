@@ -1,6 +1,6 @@
 # web 06 — place order
 
-**Status:** Not started
+**Status:** Done (de6211d)
 
 ## Goal
 Let the buyer check out from the cart (use case 3). A **Place order** button on `/cart` makes one call to Basket's checkout endpoint. Basket creates the order in Ordering and clears the basket. The page then navigates to the order detail page from web/05. The button is disabled when the cart is empty.
