@@ -16,4 +16,11 @@ public class BasketApiClient(HttpClient http)
         var response = await http.PostAsJsonAsync($"/baskets/{buyerId}/items", new AddItemRequest(productId, quantity), ct);
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task<BasketDto> RemoveItemAsync(string buyerId, int productId, CancellationToken ct = default)
+    {
+        var response = await http.DeleteAsync($"/baskets/{buyerId}/items/{productId}", ct);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<BasketDto>(ct) ?? new BasketDto(buyerId, []);
+    }
 }
