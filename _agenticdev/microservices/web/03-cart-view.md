@@ -1,6 +1,6 @@
 # web 03 — cart view
 
-**Status:** Not started
+**Status:** Done (104a5a2)
 
 ## Goal
 Show the buyer's basket on `/cart` (use case 2). Each line shows its name, unit price, quantity and line total, and the page shows the basket total. An empty basket shows an empty state that links to Products. This spec adds the **Cart** nav link. Every number comes from the Basket snapshot.
@@ -10,10 +10,16 @@ Show the buyer's basket on `/cart` (use case 2). Each line shows its name, unit 
 - basket-api/01-get-basket
 
 ## Scope
-- [ ] `BasketApiClient`: add `GetBasketAsync(buyerId)` → `GET /baskets/{buyerId}`.
-- [ ] `Cart.razor` at `/cart`: a table of the lines (name, unit price, qty, line total = unit price × qty) and the basket total (Σ line totals). It shows only what Basket returned.
-- [ ] Empty state: when the basket has no lines, show a message with a link to Products (`/`) instead of the table.
-- [ ] `NavMenu.razor`: add **Cart** (`/cart`) after Products.
+- [ ] `BasketApiClient.cs`: add two local DTO records next to `AddItemRequest`:
+  ```csharp
+  public record BasketDto(string BuyerId, List<BasketItemDto> Items);
+  public record BasketItemDto(int ProductId, string ProductName, decimal UnitPrice, int Quantity);
+  ```
+- [ ] `BasketApiClient.cs`: add `Task<BasketDto> GetBasketAsync(string buyerId, CancellationToken ct = default)` → `GetFromJsonAsync<BasketDto>($"/baskets/{buyerId}", ct)`, returning `new BasketDto(buyerId, [])` when the body is null. No error handling: failures propagate (same as web/02).
+- [ ] `Components/Pages/Cart.razor` at `@page "/cart"`, `@rendermode InteractiveServer`, `<PageTitle>Cart</PageTitle>`, heading `Cart`. Loads `GetBasketAsync(Buyer.Id)` in `OnInitializedAsync` and shows `<p><em>Loading…</em></p>` while the basket is null.
+- [ ] `Cart.razor` table: `<table class="table">` with columns Name | Unit price | Qty | Line total (line total = `UnitPrice × Quantity`), and a `<tfoot>` row "Total" with Σ line totals. Every amount is formatted `ToString("0.00", CultureInfo.InvariantCulture)`. It shows only what Basket returned.
+- [ ] `Cart.razor` empty state: when `Items` is empty, show `<p>Your cart is empty. <a href="">Browse products</a>.</p>` instead of the table.
+- [ ] `Components/Layout/NavMenu.razor`: add a second `nav-item` after Products: `<NavLink class="nav-link" href="cart">` with `<span class="bi bi-list-nested" aria-hidden="true"></span> Cart` (the template CSS defines no cart icon).
 
 ## Explicit non-goals
 - No **Remove** button (web/04).
@@ -37,3 +43,7 @@ Show the buyer's basket on `/cart` (use case 2). Each line shows its name, unit 
 8. Browser: the nav shows **Products** and **Cart**.
 
 ## References
+- PROJECT.md §2: use case 2, "Add to cart" (the cart view).
+- PROJECT.md §4.2: `GET /baskets/{buyerId}` → `200 Basket`, an empty basket if none exists; `Basket`/`BasketItem` shapes.
+- PROJECT.md §5: route `/cart` (lines, unit price, qty, line total, basket total, empty state linking to Products), nav menu Products | Cart, typed clients with local DTO records.
+- PLAN.md Step 5: storefront spec backlog (`03-cart-view`); no new AppHost reference in this spec.

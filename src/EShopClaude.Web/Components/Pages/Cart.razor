@@ -1,0 +1,56 @@
+@page "/cart"
+@rendermode InteractiveServer
+@using System.Globalization
+@inject BasketApiClient Basket
+
+<PageTitle>Cart</PageTitle>
+
+<h1>Cart</h1>
+
+@if (basket == null)
+{
+    <p><em>Loading…</em></p>
+}
+else if (basket.Items.Count == 0)
+{
+    <p>Your cart is empty. <a href="">Browse products</a>.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Unit price</th>
+                <th>Qty</th>
+                <th>Line total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in basket.Items)
+            {
+                <tr>
+                    <td>@i.ProductName</td>
+                    <td>@Money(i.UnitPrice)</td>
+                    <td>@i.Quantity</td>
+                    <td>@Money(i.UnitPrice * i.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">Total</th>
+                <th>@Money(basket.Items.Sum(i => i.UnitPrice * i.Quantity))</th>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+@code {
+    private BasketDto? basket;
+
+    protected override async Task OnInitializedAsync()
+        => basket = await Basket.GetBasketAsync(Buyer.Id);
+
+    private static string Money(decimal amount) => amount.ToString("0.00", CultureInfo.InvariantCulture);
+}
