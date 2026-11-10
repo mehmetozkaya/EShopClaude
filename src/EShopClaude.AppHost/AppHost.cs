@@ -33,6 +33,8 @@ builder.AddProject<Projects.EShopClaude_Web>("webfrontend")
     .WaitFor(catalogApi)
     .WithReference(basketApi)
     .WaitFor(basketApi)
+    .WithReference(orderingApi)
+    .WaitFor(orderingApi)
     .WithHttpHealthCheck("/health");
 
 builder.Build().Run();

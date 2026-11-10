@@ -1,0 +1,65 @@
+@page "/orders/{id:int}"
+@rendermode InteractiveServer
+@using System.Globalization
+@inject OrderingApiClient Ordering
+
+<PageTitle>Order @Id</PageTitle>
+
+<h1>Order @Id</h1>
+
+@if (!loaded)
+{
+    <p><em>Loading…</em></p>
+}
+else if (order == null)
+{
+    <p>Order @Id not found. <a href="">Browse products</a>.</p>
+}
+else
+{
+    <p>Placed @order.CreatedAt.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture)</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Unit price</th>
+                <th>Qty</th>
+                <th>Line total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var l in order.Lines)
+            {
+                <tr>
+                    <td>@l.ProductName</td>
+                    <td>@Money(l.UnitPrice)</td>
+                    <td>@l.Quantity</td>
+                    <td>@Money(l.UnitPrice * l.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">Total</th>
+                <th>@Money(order.Total)</th>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool loaded;
+    private OrderDto? order;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        order = await Ordering.GetOrderAsync(Id);
+        loaded = true;
+    }
+
+    private static string Money(decimal amount) => amount.ToString("0.00", CultureInfo.InvariantCulture);
+}

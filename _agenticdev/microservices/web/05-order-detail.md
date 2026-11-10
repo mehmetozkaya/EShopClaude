@@ -1,6 +1,6 @@
 # web 05 — order detail
 
-**Status:** Not started
+**Status:** Done (33915e8)
 
 ## Goal
 Show one order on `/orders/{id:int}` (use case 4). The page shows the order's id, date, lines and total. It is also the confirmation page that Place order (web/06) navigates to. It comes before Place order so that checkout lands on a working page. It can be verified on its own by creating an order over HTTP through basket-api checkout. This is the first page that calls Ordering, so it adds the `ordering-api` reference on `webfrontend` and an `OrderingApiClient` with one get method.
@@ -11,9 +11,16 @@ Show one order on `/orders/{id:int}` (use case 4). The page shows the order's id
 
 ## Scope
 - [ ] `AppHost.cs`: on `webfrontend`, add `.WithReference(orderingApi).WaitFor(orderingApi)`. Keep the existing references.
-- [ ] `OrderingApiClient.cs`: a typed `HttpClient` with base address `https+http://ordering-api` and a method `GetOrderAsync(id)` → `GET /orders/{id}`, which returns `null` on `404`. It declares its own local `OrderDto` and `OrderLineDto` records.
+- [ ] `OrderingApiClient.cs`: a typed `HttpClient` with base address `https+http://ordering-api` and a method `Task<OrderDto?> GetOrderAsync(int id, CancellationToken ct = default)` → `GET /orders/{id}`. It calls `http.GetAsync`. On `404` it returns `null`. Otherwise it calls `EnsureSuccessStatusCode()` and returns `ReadFromJsonAsync<OrderDto>(ct)`. Other failures propagate (same as web/02–04). It declares its own local records:
+  - `OrderDto(int Id, string BuyerId, DateTime CreatedAt, decimal Total, List<OrderLineDto> Lines)`
+  - `OrderLineDto(int Id, int ProductId, string ProductName, decimal UnitPrice, int Quantity)`
 - [ ] `Program.cs`: register `OrderingApiClient`.
-- [ ] `OrderDetail.razor` at `/orders/{id:int}`: the order id, the created date, a lines table (name, unit price, qty, line total) and the order `Total` as Ordering stored it.
+- [ ] `OrderDetail.razor` at `/orders/{id:int}`: `@rendermode InteractiveServer` with a "Loading…" state, as in `Cart.razor`. `<PageTitle>Order {id}</PageTitle>` and `<h1>Order {id}</h1>`. It shows:
+  - the created date: `CreatedAt` (UTC) formatted `yyyy-MM-dd HH:mm 'UTC'` with invariant culture and no local-time conversion;
+  - a lines table (name, unit price, qty, line total);
+  - the order `Total` as Ordering stored it.
+
+  Money is formatted `0.00` invariant by a page-local `Money()` helper copied from `Cart.razor` (no shared helper, and `Cart.razor` is not changed).
 - [ ] Not-found state: when Ordering returns `404`, show "Order {id} not found" with a link to Products.
 
 ## Explicit non-goals
@@ -39,3 +46,9 @@ Show one order on `/orders/{id:int}` (use case 4). The page shows the order's id
 9. pgAdmin: in `orderingdb`, the order row N has total 89.48 and two order line rows.
 
 ## References
+- PROJECT.md §2: use case 4, "See the order (… order detail)".
+- PROJECT.md §2 "Out of scope": no order status/lifecycle, cancellation or editing; no login or users.
+- PROJECT.md §4.3: `GET /orders/{id}` → `200 Order` with lines, or `404`; lines copy name and price; `Total` is stored on create.
+- PROJECT.md §4.4 step 7: after checkout, Web navigates to `/orders/{orderId}`.
+- PROJECT.md §5: route `/orders/{id:int}` (order id, date, lines, total; also the confirmation page after checkout); typed `OrderingApiClient` with local DTO records.
+- PLAN.md Step 5: storefront spec backlog (`05-order-detail`); `05` adds the `ordering-api` reference on `webfrontend`; order detail comes before Place order.
