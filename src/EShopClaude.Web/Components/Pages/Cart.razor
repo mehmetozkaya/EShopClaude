@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using System.Globalization
 @inject BasketApiClient Basket
+@inject NavigationManager Nav
 
 <PageTitle>Cart</PageTitle>
 
@@ -35,7 +36,7 @@ else
                     <td>@Money(i.UnitPrice)</td>
                     <td>@i.Quantity</td>
                     <td>@Money(i.UnitPrice * i.Quantity)</td>
-                    <td><button class="btn btn-danger btn-sm" @onclick="() => RemoveAsync(i)">Remove</button></td>
+                    <td><button class="btn btn-danger btn-sm" disabled="@placing" @onclick="() => RemoveAsync(i)">Remove</button></td>
                 </tr>
             }
         </tbody>
@@ -47,16 +48,26 @@ else
             </tr>
         </tfoot>
     </table>
+    <button class="btn btn-primary" disabled="@placing" @onclick="PlaceOrderAsync">Place order</button>
 }
 
 @code {
     private BasketDto? basket;
+    private bool placing;
 
     protected override async Task OnInitializedAsync()
         => basket = await Basket.GetBasketAsync(Buyer.Id);
 
     private async Task RemoveAsync(BasketItemDto i)
         => basket = await Basket.RemoveItemAsync(Buyer.Id, i.ProductId);
+
+    private async Task PlaceOrderAsync()
+    {
+        if (placing) return;
+        placing = true;
+        var orderId = await Basket.CheckoutAsync(Buyer.Id);
+        Nav.NavigateTo($"/orders/{orderId}");
+    }
 
     private static string Money(decimal amount) => amount.ToString("0.00", CultureInfo.InvariantCulture);
 }

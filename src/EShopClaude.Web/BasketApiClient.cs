@@ -6,6 +6,8 @@ public record BasketDto(string BuyerId, List<BasketItemDto> Items);
 
 public record BasketItemDto(int ProductId, string ProductName, decimal UnitPrice, int Quantity);
 
+public record CheckoutResultDto(int OrderId);
+
 public class BasketApiClient(HttpClient http)
 {
     public async Task<BasketDto> GetBasketAsync(string buyerId, CancellationToken ct = default)
@@ -22,5 +24,13 @@ public class BasketApiClient(HttpClient http)
         var response = await http.DeleteAsync($"/baskets/{buyerId}/items/{productId}", ct);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<BasketDto>(ct) ?? new BasketDto(buyerId, []);
+    }
+
+    public async Task<int> CheckoutAsync(string buyerId, CancellationToken ct = default)
+    {
+        var response = await http.PostAsync($"/baskets/{buyerId}/checkout", null, ct);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<CheckoutResultDto>(ct);
+        return result!.OrderId;
     }
 }
