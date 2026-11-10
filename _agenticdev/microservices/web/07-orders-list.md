@@ -19,6 +19,7 @@ Show the buyer's orders on `/orders` (use case 4). The page is a table of id, da
   - Total: `Total` as Ordering returns it, formatted by a page-local `Money()` helper (`0.00` invariant) copied from `OrderDetail.razor`. There is no shared helper.
 - [ ] Empty state in `Orders.razor`: when the list is empty, show "You have no orders yet. `<a href="">Browse products</a>`." instead of the table.
 - [ ] `NavMenu.razor`: add an **Orders** `NavLink` (`href="orders"`, icon `bi bi-receipt`) after Cart.
+- [ ] `NavMenu.razor.css`: add a `.bi-receipt` rule with the Bootstrap Icons `receipt` SVG as a white `data:` URI `background-image`, the same way as the existing `.bi-*` rules. The template doesn't load the Bootstrap Icons font, so without this rule the icon renders blank.
 
 ## Explicit non-goals
 - No paging, filtering or sorting controls (PROJECT.md "Out of scope").
