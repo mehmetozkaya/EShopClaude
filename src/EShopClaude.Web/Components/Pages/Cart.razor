@@ -24,6 +24,7 @@ else
                 <th>Unit price</th>
                 <th>Qty</th>
                 <th>Line total</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +35,7 @@ else
                     <td>@Money(i.UnitPrice)</td>
                     <td>@i.Quantity</td>
                     <td>@Money(i.UnitPrice * i.Quantity)</td>
+                    <td><button class="btn btn-danger btn-sm" @onclick="() => RemoveAsync(i)">Remove</button></td>
                 </tr>
             }
         </tbody>
@@ -41,6 +43,7 @@ else
             <tr>
                 <th colspan="3">Total</th>
                 <th>@Money(basket.Items.Sum(i => i.UnitPrice * i.Quantity))</th>
+                <th></th>
             </tr>
         </tfoot>
     </table>
@@ -51,6 +54,9 @@ else
 
     protected override async Task OnInitializedAsync()
         => basket = await Basket.GetBasketAsync(Buyer.Id);
+
+    private async Task RemoveAsync(BasketItemDto i)
+        => basket = await Basket.RemoveItemAsync(Buyer.Id, i.ProductId);
 
     private static string Money(decimal amount) => amount.ToString("0.00", CultureInfo.InvariantCulture);
 }
