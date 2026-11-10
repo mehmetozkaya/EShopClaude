@@ -29,6 +29,8 @@ builder.AddProject<Projects.EShopClaude_Basket_Api>("basket-api")
 
 builder.AddProject<Projects.EShopClaude_Web>("webfrontend")
     .WithExternalHttpEndpoints()
+    .WithReference(catalogApi)
+    .WaitFor(catalogApi)
     .WithHttpHealthCheck("/health");
 
 builder.Build().Run();

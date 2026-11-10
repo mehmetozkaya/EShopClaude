@@ -1,7 +1,45 @@
 ﻿@page "/"
+@using System.Globalization
+@inject CatalogApiClient Catalog
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Products</PageTitle>
 
-<h1>Welcome to EShopClaude</h1>
+<h1>Products</h1>
 
-Distributed EShop microservices built with Claude Code.
+@if (products == null)
+{
+    <p><em>Loading…</em></p>
+}
+else if (products.Length == 0)
+{
+    <p>No products.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in products)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.Price.ToString("0.00", CultureInfo.InvariantCulture)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ProductDto[]? products;
+
+    protected override async Task OnInitializedAsync()
+        => products = await Catalog.GetProductsAsync();
+}
