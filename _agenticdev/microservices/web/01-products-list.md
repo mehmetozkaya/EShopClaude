@@ -1,6 +1,6 @@
 # web 01 — products list
 
-**Status:** Not started
+**Status:** Done (b5eb10a)
 
 ## Goal
 Show the product catalog on the storefront home page (use case 1). This is the first page that calls a service. It adds the `catalog-api` reference to `webfrontend`, a `CatalogApiClient` with one list method, and renames the nav's Home link to **Products**.
