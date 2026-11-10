@@ -12,10 +12,18 @@ The client, the page, the nav rename and the AppHost reference are one spec beca
 
 ## Scope
 - [ ] `AppHost.cs`: on `webfrontend`, add `.WithReference(catalogApi).WaitFor(catalogApi)`.
-- [ ] `CatalogApiClient.cs`: a typed `HttpClient` with base address `https+http://catalog-api` and a method `GetProductsAsync()` → `GET /products`. It declares its own local `ProductDto(int Id, string Name, string Description, decimal Price)` record.
-- [ ] `Program.cs`: register `CatalogApiClient` with `AddHttpClient`.
-- [ ] `Home.razor` at `/`: a table with the name, description and price of each product, in the order Catalog returns. It has a page title of "Products".
-- [ ] `NavMenu.razor`: rename the Home link to **Products** (`/`).
+- [ ] `CatalogApiClient.cs` (Web project root, where the template's `WeatherApiClient.cs` was): a typed `HttpClient` with a method `Task<ProductDto[]> GetProductsAsync(CancellationToken ct = default)` → `GET /products` via `GetFromJsonAsync`, returning `[]` when the body is null. It declares its own local record:
+  ```csharp
+  public record ProductDto(int Id, string Name, string Description, decimal Price);
+  ```
+- [ ] `Program.cs`: register `CatalogApiClient` with `AddHttpClient<CatalogApiClient>(c => c.BaseAddress = new("https+http://catalog-api"))`.
+- [ ] `Home.razor` at `/`:
+  - Static SSR (no `@rendermode`). Load the products in `OnInitializedAsync`.
+  - `<PageTitle>Products</PageTitle>` and `<h1>Products</h1>`. Remove the template welcome text.
+  - While the list is null, show "Loading…". If it is empty, show "No products.".
+  - Otherwise show a table with columns Name, Description and Price, in the order Catalog returns. Format the price as `Price.ToString("0.00", CultureInfo.InvariantCulture)`.
+  - No error handling: if the call fails, the exception propagates.
+- [ ] `NavMenu.razor`: change the Home link's text to **Products** (`/`). Keep the `bi-house-door-fill` icon.
 
 ## Explicit non-goals
 - No **Add to cart** button, no `BuyerId` constant and no `BasketApiClient` (web/02).
@@ -38,3 +46,8 @@ The client, the page, the nav rename and the AppHost reference are one spec beca
 7. Trace: on the dashboard's Traces page, the trace for loading `/` has a `webfrontend` span with a child `GET /products` span on `catalog-api`.
 
 ## References
+- PROJECT.md §2: use case 1, "List products".
+- PROJECT.md §3: AppHost resources (`webfrontend` → `catalog-api`, `WaitFor`) and `https+http://<resource-name>` service discovery.
+- PROJECT.md §4.1: `GET /products` → `200 Product[]` ordered by Id.
+- PROJECT.md §5: route `/`, the Products page, the nav menu and typed clients with local DTOs.
+- PLAN.md Step 5: storefront spec backlog. `01` adds the `catalog-api` reference.
