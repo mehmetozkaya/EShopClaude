@@ -12,7 +12,10 @@ Let the buyer check out from the cart (use case 3). A **Place order** button on 
 
 ## Scope
 - [ ] `BasketApiClient`: add `CheckoutAsync(buyerId)` → `POST /baskets/{buyerId}/checkout`, which returns the `orderId`. It declares a local `CheckoutResultDto(int OrderId)` record.
-- [ ] `Cart.razor`: a **Place order** button. It is disabled when the basket has no lines. Clicking it calls `CheckoutAsync` once and navigates to `/orders/{orderId}`.
+- [ ] `BasketApiClient.CheckoutAsync` sends `PostAsync($"/baskets/{buyerId}/checkout", null)` (no body), calls `EnsureSuccessStatusCode()`, reads `CheckoutResultDto` and returns `OrderId` as `int`. A `400` (empty basket) or any other failure throws.
+- [ ] `Cart.razor`: a **Place order** button below the cart table, rendered only in the non-empty branch, so the empty state shows no button. Clicking it calls `CheckoutAsync(Buyer.Id)` once and navigates to `/orders/{orderId}` (`NavigationManager`).
+- [ ] `Cart.razor`: a `placing` flag guards against a double click. While the checkout call is in flight, **Place order** and every **Remove** button are disabled.
+- [ ] `Cart.razor`: no try/catch and no new error UI. A failed checkout surfaces through Blazor's default error UI, as the existing `/cart` calls do, and the basket stays in Redis.
 
 ## Explicit non-goals
 - No checkout form, address, payment or shipping (PROJECT.md "Out of scope").
@@ -38,3 +41,9 @@ Let the buyer check out from the cart (use case 3). A **Place order** button on 
 9. pgAdmin: `orderingdb` has the new order row and its 2 line rows.
 
 ## References
+- PROJECT.md §2: use case 3, "Checkout".
+- PROJECT.md §2 "Out of scope": no payments, shipping, addresses or checkout form; no re-pricing at checkout.
+- PROJECT.md §4.2: `POST /baskets/{buyerId}/checkout` → `200 { orderId }`, or `400` if the basket is empty.
+- PROJECT.md §4.4: checkout flow steps 1 (Web posts to Basket) and 7 (Web navigates to `/orders/{orderId}`); the basket is kept if the order call fails.
+- PROJECT.md §5: route `/cart`, **Place order** (disabled when empty) → `/orders/{id}`.
+- PLAN.md Step 3 (web backlog): order detail (`05`) comes before Place order (`06`).
