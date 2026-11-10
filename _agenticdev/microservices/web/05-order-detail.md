@@ -1,6 +1,6 @@
 # web 05 — order detail
 
-**Status:** Not started
+**Status:** Done (33915e8)
 
 ## Goal
 Show one order on `/orders/{id:int}` (use case 4). The page shows the order's id, date, lines and total. It is also the confirmation page that Place order (web/06) navigates to. It comes before Place order so that checkout lands on a working page. It can be verified on its own by creating an order over HTTP through basket-api checkout. This is the first page that calls Ordering, so it adds the `ordering-api` reference on `webfrontend` and an `OrderingApiClient` with one get method.
