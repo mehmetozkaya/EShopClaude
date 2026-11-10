@@ -18,7 +18,7 @@ A spec is ready to start when every spec in its "Depends on" column is Done.
 | basket-api | [03-remove-item](basket-api/03-remove-item.md) | `feature/basket-03-remove-item` | basket-api/02 | Done |
 | basket-api | [04-checkout](basket-api/04-checkout.md) | `feature/basket-04-checkout` | basket-api/02, ordering-api/02 | Done |
 | web | [01-products-list](web/01-products-list.md) | `feature/web-01-products-list` | catalog-api/03 | Done |
-| web | [02-add-to-cart](web/02-add-to-cart.md) | `feature/web-02-add-to-cart` | web/01, basket-api/02 | Not started |
+| web | [02-add-to-cart](web/02-add-to-cart.md) | `feature/web-02-add-to-cart` | web/01, basket-api/02 | Done |
 | web | [03-cart-view](web/03-cart-view.md) | `feature/web-03-cart-view` | web/02, basket-api/01 | Not started |
 | web | [04-remove-line](web/04-remove-line.md) | `feature/web-04-remove-line` | web/03, basket-api/03 | Not started |
 | web | [05-order-detail](web/05-order-detail.md) | `feature/web-05-order-detail` | ordering-api/03 | Not started |

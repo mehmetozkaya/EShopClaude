@@ -1,6 +1,6 @@
 # web 02 — add to cart
 
-**Status:** Not started
+**Status:** Done (344e40b)
 
 ## Goal
 Let the buyer put a product in the basket from the Products page (use case 2). This spec adds the `BuyerId = "demo-user"` constant in one place in Web, a `BasketApiClient` with one add method, and the `basket-api` reference on `webfrontend`. The page sends only a product id and a quantity. Basket.Api takes the name and price snapshot from Catalog.
