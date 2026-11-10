@@ -72,45 +72,13 @@ This step is now part of 3.3: `basket-api/02-add-item` (Basket → Catalog) and 
 The step number is kept so that the ids of Steps 5 and 6 don't change.
 
 ## Step 5 — Storefront pages
-**5.1 Web clients, buyer constant and nav** (`feature/5.1-web-clients`)
-- Tasks
-  - Add the `BuyerId = "demo-user"` constant in one place.
-  - Add typed clients `CatalogApiClient`, `BasketApiClient` and `OrderingApiClient`, each with local DTO records, and register them in `Program.cs`.
-  - Set the NavMenu to Products (`/`), Cart (`/cart`) and Orders (`/orders`).
-- Projects: Web
-- Verify
-  - Build passes.
-  - Browser: the nav shows the 3 links, and the app starts healthy.
+The storefront (`EShopClaude.Web`) is built like a fourth service: a backlog of small specs, one feature branch per spec, following `_agenticdev/WOW.md`.
+The specs live in `_agenticdev/microservices/web/`, and their status is tracked in `_agenticdev/microservices/README.md`. Branches use `feature/web-NN-<short-name>`.
 
-**5.2 Products page (use cases 1 and 2)** (`feature/5.2-products-page`)
-- Tasks
-  - Make `Home.razor` at `/` a product table with name, description and price, plus an **Add to cart** button (qty 1) on each row.
-  - After a click, show "Added {name}" and stay on the page.
-- Projects: Web
-- Verify
-  - Browser: the products list. Clicking add shows the message.
-  - HTTP: `GET basket-api /baskets/demo-user` shows the line.
-  - Trace: webfrontend → basket-api → catalog-api.
-
-**5.3 Cart page (use cases 2 and 3)** (`feature/5.3-cart-page`)
-- Tasks
-  - Add `/cart` with each line's name, unit price, qty and line total, plus the basket total.
-  - Add **Remove** on each line.
-  - Add **Place order**, which is disabled when the cart is empty and navigates to `/orders/{id}`.
-  - Show an empty state that links to Products.
-- Projects: Web
-- Verify
-  - Browser: the totals are correct. Remove deletes the line. The empty state shows.
-  - Browser: Place order navigates to the order route. That page arrives in 5.4, so a 404 page is expected until then.
-
-**5.4 Orders list and order detail (use case 4)** (`feature/5.4-orders-pages`)
-- Tasks
-  - Add `/orders` with a table of id, date, item count and total for demo-user. Each row links to its detail, and the page has an empty state.
-  - Add `/orders/{id:int}` with the id, date, lines and total. This page is also the checkout confirmation.
-- Projects: Web
-- Verify
-  - Browser: after checkout, the detail page shows the order, and the list shows it newest first.
-  - Browser: the empty state shows when there are no orders.
+- Owns: the storefront pages (§5) and the `webfrontend` registration in the AppHost. A web spec never changes a service.
+- Specs: `01-products-list.md`, `02-add-to-cart.md`, `03-cart-view.md`, `04-remove-line.md`, `05-order-detail.md`, `06-place-order.md`, `07-orders-list.md`
+- Each typed client grows one method per spec, starting with the first page that calls its service. That same spec adds the `WithReference`/`WaitFor` on `webfrontend`: `01` adds catalog-api, `02` adds basket-api and `05` adds ordering-api.
+- Order detail (`05`) comes before Place order (`06`), so checkout lands on a page that already works.
 
 ## Step 6 — End-to-end verification
 **6.1 Automated E2E test** (`feature/6.1-e2e-test`)
@@ -147,9 +115,6 @@ The step number is kept so that the ids of Steps 5 and 6 don't change.
 | 3.2 | `ordering-NN-*` (4 specs) | Ordering.Api | per spec |
 | 3.3 | `basket-NN-*` (4 specs) | Basket.Api | per spec |
 | 4 | in 3.3 | — | — |
-| 5.1 | web-clients | Web | build, browser |
-| 5.2 | products-page | Web | browser, trace |
-| 5.3 | cart-page | Web | browser |
-| 5.4 | orders-pages | Web | browser |
+| 5 | `web-NN-*` (7 specs) | Web | per spec |
 | 6.1 | e2e-test | Tests | `dotnet test` |
 | 6.2 | dod | all | §7 checklist |
