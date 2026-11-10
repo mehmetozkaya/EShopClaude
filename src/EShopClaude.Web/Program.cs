@@ -13,6 +13,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddOutputCache();
 
 builder.Services.AddHttpClient<CatalogApiClient>(c => c.BaseAddress = new("https+http://catalog-api"));
+builder.Services.AddHttpClient<BasketApiClient>(c => c.BaseAddress = new("https+http://basket-api"));
 
 var app = builder.Build();
 

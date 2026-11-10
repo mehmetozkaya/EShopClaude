@@ -1,10 +1,17 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 @using System.Globalization
 @inject CatalogApiClient Catalog
+@inject BasketApiClient Basket
 
 <PageTitle>Products</PageTitle>
 
 <h1>Products</h1>
+
+@if (added != null)
+{
+    <p class="alert alert-success">Added @added</p>
+}
 
 @if (products == null)
 {
@@ -22,6 +29,7 @@ else
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +39,7 @@ else
                     <td>@p.Name</td>
                     <td>@p.Description</td>
                     <td>@p.Price.ToString("0.00", CultureInfo.InvariantCulture)</td>
+                    <td><button class="btn btn-primary btn-sm" @onclick="() => AddAsync(p)">Add to cart</button></td>
                 </tr>
             }
         </tbody>
@@ -39,7 +48,14 @@ else
 
 @code {
     private ProductDto[]? products;
+    private string? added;
 
     protected override async Task OnInitializedAsync()
         => products = await Catalog.GetProductsAsync();
+
+    private async Task AddAsync(ProductDto p)
+    {
+        await Basket.AddItemAsync(Buyer.Id, p.Id, 1);
+        added = p.Name;
+    }
 }
