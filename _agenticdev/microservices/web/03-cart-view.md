@@ -1,6 +1,6 @@
 # web 03 — cart view
 
-**Status:** Not started
+**Status:** Done (104a5a2)
 
 ## Goal
 Show the buyer's basket on `/cart` (use case 2). Each line shows its name, unit price, quantity and line total, and the page shows the basket total. An empty basket shows an empty state that links to Products. This spec adds the **Cart** nav link. Every number comes from the Basket snapshot.
