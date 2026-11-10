@@ -1,3 +1,4 @@
+using EShopClaude.Web;
 using EShopClaude.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddOutputCache();
+
+builder.Services.AddHttpClient<CatalogApiClient>(c => c.BaseAddress = new("https+http://catalog-api"));
 
 var app = builder.Build();
 
