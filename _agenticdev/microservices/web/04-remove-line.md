@@ -1,6 +1,6 @@
 # web 04 — remove line
 
-**Status:** Not started
+**Status:** Done (d37b28e)
 
 ## Goal
 Let the buyer delete a line from the cart (use case 2, "and remove a line"). A **Remove** button on each `/cart` line calls Basket's delete endpoint. The page then shows the basket that Basket returns. Remove deletes the whole line, with no decrement.
