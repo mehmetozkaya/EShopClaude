@@ -10,8 +10,9 @@ Let the buyer delete a line from the cart (use case 2, "and remove a line"). A *
 - basket-api/03-remove-item
 
 ## Scope
-- [ ] `BasketApiClient`: add `RemoveItemAsync(buyerId, productId)` → `DELETE /baskets/{buyerId}/items/{productId}`.
-- [ ] `Cart.razor`: a **Remove** button on each line. After the call, it re-renders from the returned basket, so the total updates. When the last line is removed, the page shows the empty state.
+- [ ] `BasketApiClient.cs`: add `Task<BasketDto> RemoveItemAsync(string buyerId, int productId, CancellationToken ct = default)`. It calls `http.DeleteAsync($"/baskets/{buyerId}/items/{productId}", ct)`, then `EnsureSuccessStatusCode()`, then returns `ReadFromJsonAsync<BasketDto>(ct)`, or `new BasketDto(buyerId, [])` when the body is null. No new DTO (the request has no body). No error handling: failures propagate (same as web/02 and web/03).
+- [ ] `Cart.razor` table: add a fifth column after "Line total" with an empty header `<th></th>`. Each row's cell holds `<button class="btn btn-danger btn-sm" @onclick="() => RemoveAsync(i)">Remove</button>`. The `<tfoot>` row keeps `colspan="3"` for "Total" and gets an extra empty `<th></th>` after the total, so the amount stays under "Line total".
+- [ ] `Cart.razor` `@code`: add `RemoveAsync(BasketItemDto i)`, which sets `basket = await Basket.RemoveItemAsync(Buyer.Id, i.ProductId)`. The page re-renders from the returned basket (no second `GET`), so the total updates. When the last line is removed, the existing empty state shows.
 
 ## Explicit non-goals
 - No quantity decrement or editor. Remove deletes the line (PROJECT.md "Out of scope").
@@ -34,3 +35,8 @@ Let the buyer delete a line from the cart (use case 2, "and remove a line"). A *
 7. Trace: the trace for a Remove click has `webfrontend` → `basket-api` `DELETE /baskets/{buyerId}/items/{productId}`, plus Redis `GET` and `SET` spans. It has no span on `catalog-api`.
 
 ## References
+- PROJECT.md §2: use case 2, "Add to cart (and remove a line)".
+- PROJECT.md §2 "Out of scope": no cart quantity editor; remove deletes the line.
+- PROJECT.md §4.2: `DELETE /baskets/{buyerId}/items/{productId}` → removes the line, `200 Basket`.
+- PROJECT.md §5: route `/cart` with a **Remove** per line and the empty state linking to Products; typed clients with local DTO records.
+- PLAN.md Step 5: storefront spec backlog (`04-remove-line`); no new AppHost reference in this spec.
