@@ -11,10 +11,14 @@ Show the buyer's orders on `/orders` (use case 4). The page is a table of id, da
 - ordering-api/04-list-orders
 
 ## Scope
-- [ ] `OrderingApiClient`: add `GetOrdersAsync(buyerId)` → `GET /orders?buyerId={buyerId}`. It declares a local `OrderSummaryDto(int Id, DateTime CreatedAt, decimal Total, int ItemCount)` record.
-- [ ] `Orders.razor` at `/orders`: a table with id, date, item count and total, in the order Ordering returns (newest first). Each row links to `/orders/{id}`.
-- [ ] Empty state: when there are no orders, show a message with a link to Products.
-- [ ] `NavMenu.razor`: add **Orders** (`/orders`) after Cart.
+- [ ] `OrderingApiClient.cs`: add `Task<OrderSummaryDto[]> GetOrdersAsync(string buyerId, CancellationToken ct = default)` → `GetFromJsonAsync<OrderSummaryDto[]>($"/orders?buyerId={Uri.EscapeDataString(buyerId)}", ct) ?? []`. Failures propagate, the same as the other clients. It declares a local record `OrderSummaryDto(int Id, DateTime CreatedAt, decimal Total, int ItemCount)`. `GetOrderAsync` is unchanged.
+- [ ] `Orders.razor` at `/orders`: `@rendermode InteractiveServer` with a "Loading…" state, as in `OrderDetail.razor`. It loads in `OnInitializedAsync` with `Ordering.GetOrdersAsync(Buyer.Id)`. It has `<PageTitle>My orders</PageTitle>` and `<h1>My orders</h1>`, then a table with the columns Order, Date, Items and Total, in the order Ordering returns (newest first):
+  - Order: the id as a link, `<a href="orders/{id}">{id}</a>`. There is no whole-row click handler.
+  - Date: `CreatedAt` (UTC) formatted `yyyy-MM-dd HH:mm 'UTC'` with invariant culture, with no local-time conversion.
+  - Items: `ItemCount` as Ordering returns it.
+  - Total: `Total` as Ordering returns it, formatted by a page-local `Money()` helper (`0.00` invariant) copied from `OrderDetail.razor`. There is no shared helper.
+- [ ] Empty state in `Orders.razor`: when the list is empty, show "You have no orders yet. `<a href="">Browse products</a>`." instead of the table.
+- [ ] `NavMenu.razor`: add an **Orders** `NavLink` (`href="orders"`, icon `bi bi-receipt`) after Cart.
 
 ## Explicit non-goals
 - No paging, filtering or sorting controls (PROJECT.md "Out of scope").
@@ -34,8 +38,14 @@ Show the buyer's orders on `/orders` (use case 4). The page is a table of id, da
 5. Browser: place order A (Wireless Mouse × 1, total 24.99), then order B (Mechanical Keyboard × 2, total 178.00). `/orders` shows two rows, B first and then A, with item counts 2 and 1 and totals 178.00 and 24.99.
 6. HTTP: `GET http://localhost:5103/orders?buyerId=demo-user` returns the same ids, item counts and totals in the same order.
 7. HTTP: create an order for another buyer (`POST http://localhost:5102/baskets/other-buyer/items` `{ "productId": 1, "quantity": 1 }`, then `POST http://localhost:5102/baskets/other-buyer/checkout`). After a refresh, `/orders` still shows only orders A and B.
-8. Browser: clicking the row for B opens `/orders/{B}` with its lines and total.
+8. Browser: clicking the order id link for B opens `/orders/{B}` with its lines and total.
 9. Trace: the trace for loading `/orders` has `webfrontend` → `ordering-api` `GET /orders` with a Postgres span. It has no span on `catalog-api` or `basket-api`.
 10. Browser: the nav shows **Products**, **Cart** and **Orders**. Full journey: list → add 2 products → remove one → place order → order detail → **Orders** shows it → **Cart** is empty.
 
 ## References
+- PROJECT.md §2: use case 4, "See the order (list of my orders + order detail)".
+- PROJECT.md §2 "Out of scope": no paging, no order status/lifecycle, cancellation or editing, and no login or users.
+- PROJECT.md §3: the buyer id `demo-user` is defined only in Web and passed to the APIs in the URL.
+- PROJECT.md §4.3: `GET /orders?buyerId=` → `200 OrderSummary[] { id, createdAt, total, itemCount }`, newest first.
+- PROJECT.md §5: nav **Products** | **Cart** | **Orders**; route `/orders` (My orders: id, date, item count, total, each linking to its detail, with an empty state); typed `OrderingApiClient` with local DTO records; the user journey.
+- PLAN.md Step 5: storefront spec backlog (`07-orders-list`). Each typed client grows one method per spec, and `05` already added `ordering-api` to `webfrontend`.
