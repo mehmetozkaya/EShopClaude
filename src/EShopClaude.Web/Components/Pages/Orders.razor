@@ -1,0 +1,52 @@
+@page "/orders"
+@rendermode InteractiveServer
+@using System.Globalization
+@inject OrderingApiClient Ordering
+
+<PageTitle>My orders</PageTitle>
+
+<h1>My orders</h1>
+
+@if (orders == null)
+{
+    <p><em>Loading…</em></p>
+}
+else if (orders.Length == 0)
+{
+    <p>You have no orders yet. <a href="">Browse products</a>.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in orders)
+            {
+                <tr>
+                    <td><a href="orders/@o.Id">@o.Id</a></td>
+                    <td>@o.CreatedAt.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture)</td>
+                    <td>@o.ItemCount</td>
+                    <td>@Money(o.Total)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private OrderSummaryDto[]? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await Ordering.GetOrdersAsync(Buyer.Id);
+    }
+
+    private static string Money(decimal amount) => amount.ToString("0.00", CultureInfo.InvariantCulture);
+}
