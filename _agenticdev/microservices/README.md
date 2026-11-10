@@ -23,4 +23,4 @@ A spec is ready to start when every spec in its "Depends on" column is Done.
 | web | [04-remove-line](web/04-remove-line.md) | `feature/web-04-remove-line` | web/03, basket-api/03 | Done |
 | web | [05-order-detail](web/05-order-detail.md) | `feature/web-05-order-detail` | ordering-api/03 | Done |
 | web | [06-place-order](web/06-place-order.md) | `feature/web-06-place-order` | web/03, web/05, basket-api/04 | Done |
-| web | [07-orders-list](web/07-orders-list.md) | `feature/web-07-orders-list` | web/02, web/05, ordering-api/04 | Not started |
+| web | [07-orders-list](web/07-orders-list.md) | `feature/web-07-orders-list` | web/02, web/05, ordering-api/04 | Done |

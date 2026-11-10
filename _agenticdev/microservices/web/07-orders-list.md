@@ -1,6 +1,6 @@
 # web 07 — orders list
 
-**Status:** Not started
+**Status:** Done (c4f5663)
 
 ## Goal
 Show the buyer's orders on `/orders` (use case 4). The page is a table of id, date, item count and total, newest first. Each row links to its detail page from web/05. When there are no orders, the page shows an empty state. This spec adds the **Orders** nav link, which completes the storefront journey.
